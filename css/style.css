@@ -1,0 +1,55 @@
+/* css/style.css */
+
+/* Thay đổi font chữ mặc định */
+body {
+    font-family: 'Roboto', sans-serif; /* Giả sử đã nhúng Google Font Roboto */
+}
+
+/* Tùy chỉnh màu primary */
+:root {
+    --bs-primary: #005aA0; /* Ví dụ đổi màu xanh dương chính */
+    --bs-primary-rgb: 0, 90, 160;
+}
+.btn-primary {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+.btn-primary:hover {
+   background-color: #004175; /* Màu đậm hơn khi hover */
+   border-color: #004175;
+}
+
+
+/* Làm nổi bật thẻ slot hơn */
+#slots-container .card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border-width: 1px;
+}
+
+#slots-container .card:hover {
+     transform: translateY(-3px);
+     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+ /* Định nghĩa rõ hơn class trạng thái từ JS */
+.card.bg-success-subtle {
+     border-left: 5px solid var(--bs-success);
+}
+ .card.bg-danger-subtle {
+     border-left: 5px solid var(--bs-danger);
+}
+.card.bg-warning-subtle {
+     border-left: 5px solid var(--bs-warning);
+}
+.card.bg-secondary-subtle {
+    border-left: 5px solid var(--bs-secondary);
+}
+
+/* Tùy chỉnh Sidebar */
+.sidebar { /* Giả sử bạn thêm class 'sidebar' vào div sidebar trong sidebar.php */
+  background-color: #f1f1f1;
+}
+.sidebar .nav-link.active {
+    background-color: var(--bs-primary) !important; /* Dùng !important cẩn thận */
+    color: white !important;
+}
