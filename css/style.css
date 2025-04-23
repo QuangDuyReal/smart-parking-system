@@ -1,55 +1,115 @@
 /* css/style.css */
 
-/* Thay đổi font chữ mặc định */
+/* --- Thiết lập Cơ bản & Fonts --- */
 body {
     font-family: 'Roboto', sans-serif; /* Giả sử đã nhúng Google Font Roboto */
+    /* Ngăn cuộn body nếu các thành phần con đã xử lý */
+    /* overflow: hidden; */ /* Thường không cần thiết nếu height/overflow con đúng */
 }
 
-/* Tùy chỉnh màu primary */
+/* --- Tùy chỉnh Bootstrap (Ví dụ màu Primary) --- */
 :root {
-    --bs-primary: #005aA0; /* Ví dụ đổi màu xanh dương chính */
+    --bs-primary: #005aA0;
     --bs-primary-rgb: 0, 90, 160;
+    /* Có thể thêm các biến màu khác */
+    /* --bs-body-bg: #f8f9fa; */ /* Nền body nếu muốn khác trắng */
 }
+
 .btn-primary {
     background-color: var(--bs-primary);
     border-color: var(--bs-primary);
 }
-.btn-primary:hover {
-   background-color: #004175; /* Màu đậm hơn khi hover */
+.btn-primary:hover, .btn-primary:focus { /* Thêm focus */
+   background-color: #004175;
    border-color: #004175;
+   box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.5); /* Thêm hiệu ứng focus */
+}
+
+/* --- Layout Chính (Fixed Sidebar, Scrollable Content) --- */
+
+/* Container chính chứa sidebar và main content */
+.main-layout {
+    display: flex;
+    /* Quan trọng: Chiều cao bằng viewport trừ đi chiều cao navbar (ví dụ 56px) */
+    /* ĐO CHIỀU CAO NAVBAR CỦA BẠN BẰNG INSPECT ELEMENT VÀ THAY VÀO ĐÂY */
+    height: calc(100vh - 56px); /* Ví dụ: Nếu navbar cao 56px */
+    overflow: hidden; /* Ngăn container này có scrollbar */
+}
+
+/* --- Sidebar (Cố định, không cuộn theo trang) --- */
+.sidebar {
+    width: 280px;       /* Chiều rộng cố định */
+    flex-shrink: 0;   /* Không co lại */
+    background-color: #f1f1f1; /* Màu nền */
+    border-right: 1px solid #dee2e6; /* Đường kẻ phân cách */
+    /* Cho phép cuộn NỘI DUNG bên trong sidebar */
+    overflow-y: auto;
+    /* Không cần position: sticky hay height: 100vh nữa */
+    display: flex; /* Đảm bảo vẫn là flex để các item bên trong sắp xếp */
+    flex-direction: column; /* Xếp các thành phần (ul, hr, div) theo chiều dọc */
+}
+
+.sidebar .nav-link {
+    color: #333; /* Màu chữ mặc định đậm hơn chút */
+    border-radius: 0.375rem; /* Bo góc nhẹ */
+    margin-bottom: 2px; /* Khoảng cách nhỏ */
+}
+.sidebar .nav-link:hover {
+    background-color: #e9ecef; /* Màu nền khi hover */
+}
+.sidebar .nav-link.active {
+    background-color: var(--bs-primary);
+    color: white;
+    /* Bỏ !important nếu selector đủ mạnh hoặc không bị ghi đè */
+}
+.sidebar .nav-link .fa-fw { /* Đảm bảo icon căn đều */
+    width: 1.25em;
+    text-align: center;
+}
+.sidebar hr {
+    margin-top: auto; /* Đẩy hr và phần user xuống cuối nếu .nav-pills không có flex-grow:1 */
 }
 
 
-/* Làm nổi bật thẻ slot hơn */
+/* --- Nội dung chính (Cho phép cuộn) --- */
+main.main-content { /* Sử dụng class mới để rõ ràng hơn */
+    flex-grow: 1;       /* Chiếm hết không gian còn lại */
+    overflow-y: auto;   /* Quan trọng: Cho phép chỉ phần này cuộn */
+    padding: 1.5rem;    /* Giữ padding */
+}
+
+/* --- Footer --- */
+/* Footer giờ nằm độc lập, không cần style đặc biệt cho layout này */
+/* Có thể thêm style thẩm mỹ nếu muốn */
+
+
+/* --- Các Style Khác (Slot Cards...) --- */
 #slots-container .card {
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     border-width: 1px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Shadow nhẹ mặc định */
 }
-
 #slots-container .card:hover {
-     transform: translateY(-3px);
-     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+     transform: translateY(-4px);
+     box-shadow: 0 5px 15px rgba(0,0,0,0.15); /* Shadow đậm hơn khi hover */
 }
 
- /* Định nghĩa rõ hơn class trạng thái từ JS */
-.card.bg-success-subtle {
-     border-left: 5px solid var(--bs-success);
-}
- .card.bg-danger-subtle {
-     border-left: 5px solid var(--bs-danger);
-}
-.card.bg-warning-subtle {
-     border-left: 5px solid var(--bs-warning);
-}
-.card.bg-secondary-subtle {
-    border-left: 5px solid var(--bs-secondary);
-}
+/* Trạng thái thẻ slot (dùng border thay vì bg-subtle nếu muốn rõ hơn) */
+#slots-container .card-status-available { border-left: 5px solid var(--bs-success); }
+#slots-container .card-status-occupied { border-left: 5px solid var(--bs-danger); }
+#slots-container .card-status-reserved { border-left: 5px solid var(--bs-warning); }
+#slots-container .card-status-maintenance { border-left: 5px solid var(--bs-secondary); }
 
-/* Tùy chỉnh Sidebar */
-.sidebar { /* Giả sử bạn thêm class 'sidebar' vào div sidebar trong sidebar.php */
-  background-color: #f1f1f1;
-}
-.sidebar .nav-link.active {
-    background-color: var(--bs-primary) !important; /* Dùng !important cẩn thận */
-    color: white !important;
-}
+/* Class để thêm vào card nếu đặc biệt (ví dụ dùng chung với class trạng thái) */
+#slots-container .card-is-special { border-top: 3px solid var(--bs-warning); }
+
+/* Alert Container toàn cục (nếu đặt trong header) */
+/* #alert-container { position: fixed; top: 1rem; right: 1rem; z-index: 1100; width: auto; max-width: 400px;} */
+/* Nếu bạn đặt alert container trong header.php và muốn nó cố định góc trên phải */
+
+
+/* Responsive (Ví dụ ẩn sidebar trên màn hình nhỏ nếu cần - yêu cầu thêm nút toggle) */
+/* @media (max-width: 767.98px) {
+    .sidebar { display: none; }
+    main.main-content { margin-left: 0; }
+} */

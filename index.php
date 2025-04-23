@@ -1,65 +1,81 @@
 <?php
-// (Có thể thêm session_start() nếu cần quản lý đăng nhập)
+// index.php
+
+// Bắt đầu session nếu cần quản lý đăng nhập
 session_start();
 
-// Kiểm tra đăng nhập (Ví dụ cơ bản - Cần làm phức tạp hơn)
-// if (!isset($_SESSION['user_logged_in'])) {
-//     // Chuyển hướng đến trang đăng nhập nếu chưa login
-//     // header('Location: login.php');
-//     // exit;
-// }
+// --- Ví dụ Kiểm tra Đăng nhập ---
+// Bỏ comment và tùy chỉnh logic kiểm tra của bạn
+/*
+if (!isset($_SESSION['user_logged_in'])) {
+    // Có thể lưu lại trang định đến để redirect sau khi login
+    // $_SESSION['redirect_url'] = $_SERVER['REQUEST_URI'];
+    header('Location: login.php'); // Chuyển đến trang đăng nhập
+    exit;
+}
+*/
+// --- Kết thúc Kiểm tra Đăng nhập ---
 
-// Nạp cấu hình và kết nối DB (có thể cần ở đây hoặc trong header/page cụ thể)
-// !!! QUAN TRỌNG: Đảm bảo các file này tồn tại và đúng đường dẫn !!!
+
+// Nạp cấu hình và kết nối DB
 require_once __DIR__ . '/config.php';
-require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/db.php'; // Giả sử db.php tạo biến $pdo
 
-// Phần đầu trang (quan trọng)
+// Nạp phần đầu HTML (<head>, bắt đầu <body>, container alert toàn cục)
 require_once __DIR__ . '/includes/header.php';
 
-// Thanh điều hướng trên cùng (quan trọng)
+// Nạp thanh điều hướng trên cùng (Navbar)
 require_once __DIR__ . '/includes/navbar.php';
 ?>
 
-<div class="d-flex"> <?php // Sử dụng Flexbox của Bootstrap để xếp sidebar và content ?>
+<?php // Container chính sử dụng Flexbox để sắp xếp Sidebar và Main Content ?>
+<div class="d-flex main-layout">
+
     <?php
-    // Thanh điều hướng bên trái (quan trọng)
+    // Nạp thanh điều hướng bên trái (Sidebar)
     require_once __DIR__ . '/includes/sidebar.php';
     ?>
 
-    <main class="flex-grow-1 p-3"> <?php // Phần nội dung chính ?>
-        <div id="alert-container" class="position-sticky top-0" style="z-index: 1050">
-            <?php // Vùng chứa thông báo chung, có thể di chuyển nếu muốn ?>
-        </div>
+    <?php // Phần nội dung chính, cho phép cuộn độc lập ?>
+    <main class="flex-grow-1 p-3 main-content">
         <?php
-        // === Định tuyến đơn giản dựa trên tham số 'page' ===
-        $page = $_GET['page'] ?? 'dashboard'; // Trang mặc định là dashboard
+        // Định tuyến đơn giản dựa trên tham số 'page'
+        $page = $_GET['page'] ?? 'dashboard'; // Trang mặc định
 
-        // Danh sách các trang hợp lệ
-        $allowed_pages = ['dashboard', 'history', 'settings'];
+        // Danh sách các trang hợp lệ (quan trọng để bảo mật)
+        $allowed_pages = ['dashboard', 'history', 'settings']; // Thêm các trang khác nếu có
 
         if (in_array($page, $allowed_pages)) {
-            $page_file = __DIR__ . "/pages/{$page}.php";
+            $page_file = __DIR__ . "/pages/{$page}.php"; // Đường dẫn đến file trang
             if (file_exists($page_file)) {
-                require_once $page_file; // Nạp file nội dung trang tương ứng
+                // Đặt tiêu đề trang động (ví dụ)
+                $pageTitle = ucfirst($page); // Dashboard, History, Settings
+                require_once $page_file; // Nạp file nội dung trang
             } else {
-                // Hiển thị lỗi 404 nếu file không tồn tại
-                echo '<div class="alert alert-danger">Lỗi: File trang '.htmlspecialchars($page_file).' không tìm thấy!</div>';
+                // Hiển thị lỗi nếu file trang không tồn tại
+                 $pageTitle = "Lỗi 404";
+                echo '<div class="alert alert-danger" role="alert">';
+                echo '<h4>Lỗi 404 - Không tìm thấy trang</h4>';
+                echo '<p>File trang yêu cầu <code>' . htmlspecialchars($page_file) . '</code> không tồn tại trên server.</p>';
+                echo '</div>';
             }
         } else {
-             // Hiển thị trang dashboard mặc định nếu page không hợp lệ hoặc không được cung cấp
+             // Nếu 'page' không hợp lệ, hiển thị trang dashboard mặc định
              $default_page_file = __DIR__ . '/pages/dashboard.php';
              if (file_exists($default_page_file)){
+                  $pageTitle = "Dashboard";
                  require_once $default_page_file;
              } else {
-                  echo '<div class="alert alert-danger">Lỗi: File trang dashboard mặc định không tìm thấy!</div>';
+                   $pageTitle = "Lỗi";
+                   echo '<div class="alert alert-danger" role="alert">Lỗi nghiêm trọng: Không tìm thấy file trang dashboard mặc định!</div>';
              }
         }
         ?>
-    </main>
-</div>
+    </main> <?php // Kết thúc thẻ <main> ?>
+
+</div> <?php // Kết thúc thẻ <div class="d-flex main-layout"> ?>
 
 <?php
-// Phần chân trang (quan trọng)
+// Nạp phần chân trang (Footer) - Nằm ngoài layout chính để chỉ xuất hiện khi cuộn hết main
 require_once __DIR__ . '/includes/footer.php';
 ?>
