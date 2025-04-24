@@ -361,6 +361,7 @@ function initHistoryPage() {
      const historyTableBody = document.getElementById("historyTableBody");
      const loadingIndicator = document.getElementById("history-loading");
      const paginationContainer = document.getElementById("history-pagination");
+     const clearHistoryBtn = document.getElementById("clearHistoryBtn");
 
      async function loadHistory(page = 1) {
          if (loadingIndicator) loadingIndicator.style.display = 'block';
@@ -453,16 +454,68 @@ function initHistoryPage() {
       // --- End Placeholder Pagination ---
 
 
-     // Gắn sự kiện cho form filter
-     if (filterForm) {
-         filterForm.addEventListener("submit", (event) => {
-             event.preventDefault();
-             loadHistory(1); // Load trang đầu tiên khi lọc
-         });
-     }
+    // Gắn sự kiện cho form filter
+    if (filterForm) {
+      filterForm.addEventListener("submit", function(event) { // << THÊM HÀM XỬ LÝ VÀO ĐÂY
+          event.preventDefault(); // Ngăn form gửi đi theo cách truyền thống
+          console.log("Filter form submitted. Reloading history..."); // Thêm log để xác nhận
+          loadHistory(1); // Load lại trang đầu tiên khi lọc
+      });
+    }
+        // === XỬ LÝ NÚT XÓA LỊCH SỬ (PHIÊN BẢN ĐẦY ĐỦ) ===
+        if (clearHistoryBtn) {
+          // Lưu nội dung gốc của nút (bao gồm cả icon)
+          const originalClearBtnHtml = clearHistoryBtn.innerHTML;
+  
+          clearHistoryBtn.addEventListener("click", async () => {
+              // Hiển thị hộp thoại xác nhận chi tiết
+              const confirmationMessage = "!!! CẢNH BÁO NGHIÊM TRỌNG !!!\n\n" +
+                                         "Bạn sắp XÓA TOÀN BỘ dữ liệu lịch sử ra vào.\n" +
+                                         "Hành động này KHÔNG THỂ HOÀN TÁC và toàn bộ thông tin về các lượt xe sẽ bị mất vĩnh viễn.\n\n" +
+                                         "Để xác nhận bạn thực sự muốn tiếp tục, vui lòng nhập chính xác chữ 'DELETE' (viết hoa) vào ô bên dưới:";
+              const confirmation = prompt(confirmationMessage);
+  
+              // Chỉ thực hiện nếu người dùng nhập đúng "DELETE"
+              if (confirmation === "DELETE") {
+                  clearHistoryBtn.disabled = true;
+                  // Hiển thị spinner và text loading
+                  clearHistoryBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang xóa...';
+  
+                  try {
+                      // Gọi API xóa lịch sử
+                      const result = await fetchApi('clear_history.php', { method: 'POST' }); // Dùng POST
+  
+                      // Kiểm tra kết quả trả về từ API
+                      if (result && result.status === 'success') {
+                          showAlert('Đã xóa toàn bộ lịch sử ra vào thành công!', 'success');
+                          // Load lại bảng lịch sử (lúc này sẽ trống hoặc báo không có dữ liệu)
+                          loadHistory(1);
+                      } else {
+                          // Ném lỗi nếu API trả về status khác 'success' hoặc có lỗi khác
+                           throw new Error(result?.message || 'Có lỗi không xác định xảy ra khi xóa lịch sử.');
+                      }
+                  } catch (error) {
+                      // Hiển thị lỗi cho người dùng nếu gọi API thất bại
+                      showAlert(`Lỗi khi xóa lịch sử: ${error.message}`, 'danger');
+                      console.error("Error clearing history:", error);
+                  } finally {
+                      // Luôn kích hoạt lại nút và trả lại nội dung gốc dù thành công hay lỗi
+                      clearHistoryBtn.disabled = false;
+                      clearHistoryBtn.innerHTML = originalClearBtnHtml;
+                  }
+  
+              } else if (confirmation !== null && confirmation !== "") { // Nếu người dùng có nhập gì đó nhưng sai
+                   showAlert('Chuỗi xác nhận không khớp. Hành động xóa lịch sử đã bị hủy.', 'warning');
+              } else if (confirmation === "") { // Nếu người dùng nhấn OK mà không nhập gì
+                   showAlert('Bạn chưa nhập chuỗi xác nhận. Hành động xóa lịch sử đã bị hủy.', 'warning');
+              }
+              // Nếu confirmation === null (người dùng nhấn Cancel), không làm gì cả.
+          });
+      }
+      // === KẾT THÚC XỬ LÝ NÚT XÓA ===
 
-     // Load dữ liệu lần đầu
-     loadHistory(1);
+  // Load dữ liệu lần đầu
+  loadHistory(1);
 
  } // --- Kết thúc initHistoryPage ---
 
