@@ -1,26 +1,43 @@
 <!-- pages/settings.php -->
 <div id="settings-container">
     <!-- ================================================== -->
-    <!--             Cài đặt chung (ví dụ)                 -->
+    <!--                 Cài đặt chung                    -->
     <!-- ================================================== -->
-    <form id="general-settings-form" class="mb-5">
-        <h2><i class="fas fa-cogs me-2"></i> Cài đặt chung</h2>
-        <div class="mb-3">
-            <label for="setting-esp32-ip" class="form-label">Địa chỉ IP ESP32 Cổng</label>
-            <input type="text" class="form-control" id="setting-esp32-ip" name="esp32_gate_ip" placeholder="Ví dụ: 192.168.1.100" aria-describedby="ipHelp">
-            <div id="ipHelp" class="form-text">Địa chỉ IP để gửi lệnh mở barrier từ xa.</div>
+    <form id="general-settings-form" class="mb-5 card card-body shadow-sm">
+        <h2 class="mb-4"><i class="fas fa-cogs me-2"></i> Cài đặt chung</h2>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="setting-system-name" class="form-label">Tên hệ thống / Bãi đỗ xe <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="setting-system-name" name="system_name" required placeholder="Ví dụ: Bãi đỗ xe HCMUTE">
+                </div>
+            </div>
+            <div class="col-md-6">
+                 <div class="mb-3">
+                    <label for="setting-esp32-ip" class="form-label">Địa chỉ IP ESP32 Cổng</label>
+                    <input type="text" class="form-control" id="setting-esp32-ip" name="esp32_gate_ip" placeholder="Ví dụ: 192.168.1.100" aria-describedby="ipHelp">
+                    <div id="ipHelp" class="form-text">IP để gửi lệnh mở barrier từ xa. Để trống nếu không dùng.</div>
+                 </div>
+            </div>
         </div>
+
         <div class="mb-3">
             <label for="setting-notification-email" class="form-label">Email nhận thông báo hệ thống</label>
-            <input type="email" class="form-control" id="setting-notification-email" name="notification_email" placeholder="admin@example.com">
+            <input type="email" class="form-control" id="setting-notification-email" name="notification_email" placeholder="admin@example.com" aria-describedby="emailNotifyHelp">
+             <div id="emailNotifyHelp" class="form-text">Email quản trị viên nhận cảnh báo lỗi, v.v. (nếu có).</div>
         </div>
-        <!-- Thêm các input khác cho cài đặt chung nếu cần -->
-        <button type="submit" class="btn btn-primary">
-            <i class="fas fa-save me-2"></i> Lưu Cài đặt chung
-        </button>
+
+        <!-- KHỐI CHECKBOX GỬI EMAIL ĐÃ BỊ XÓA -->
+
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-2"></i> Lưu Cài đặt chung
+            </button>
+        </div>
     </form>
 
-    <hr>
+    <hr class="my-5">
 
     <!-- ================================================== -->
     <!--              Quản lý người dùng                   -->
@@ -33,21 +50,20 @@
             </button>
         </div>
 
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
-                <thead>
+        <div class="table-responsive shadow-sm rounded">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-light">
                     <tr>
                         <th scope="col">UID (Mã thẻ)</th>
                         <th scope="col">Tên người dùng</th>
                         <th scope="col">Email</th>
-                        <th scope="col">Hành động</th>
+                        <th scope="col" class="text-center">Hành động</th>
                     </tr>
                 </thead>
                 <tbody id="user-table-body">
-                    <!-- Dữ liệu user sẽ được JS load vào đây -->
                     <tr>
-                        <td colspan="4" class="text-center">
-                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <td colspan="4" class="text-center p-4">
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                             Đang tải danh sách người dùng...
                         </td>
                     </tr>
@@ -56,19 +72,16 @@
         </div>
     </div>
 
-    <!-- Thêm các phần quản lý khác (Slot, Lịch sử...) ở đây nếu muốn -->
-    <hr>
-     <h2><i class="fas fa-parking me-2"></i> Quản lý Vị trí đỗ</h2>
-     <p class="text-muted">Chức năng quản lý vị trí đỗ xe sẽ được thêm vào sau.</p>
-     <!-- Tương tự, bạn sẽ thêm bảng và modal cho Slot ở đây -->
+    <!-- Phần quản lý vị trí đỗ (tạm ẩn) -->
+    <!-- <hr class="my-5"> ... -->
 
 </div>
 
 <!-- ================================================== -->
 <!--          Modal Thêm người dùng (Add User)          -->
 <!-- ================================================== -->
-<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form id="add-user-form">
                 <div class="modal-header">
@@ -76,13 +89,11 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                     <!-- Vùng hiển thị lỗi trong modal -->
                      <div id="add-user-alert-container"></div>
-
-                    <div class="mb-3">
+                     <div class="mb-3">
                         <label for="add-user-uid" class="form-label">UID (Mã thẻ RFID) <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="add-user-uid" name="uid" required>
-                        <div class="form-text">Nhập mã duy nhất của thẻ RFID.</div>
+                        <input type="text" class="form-control" id="add-user-uid" name="uid" required placeholder="Quét thẻ hoặc nhập mã thủ công">
+                        <div class="form-text">Mã định danh duy nhất của thẻ RFID.</div>
                     </div>
                     <div class="mb-3">
                         <label for="add-user-name" class="form-label">Tên người dùng <span class="text-danger">*</span></label>
@@ -90,8 +101,8 @@
                     </div>
                     <div class="mb-3">
                         <label for="add-user-email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="add-user-email" name="email">
-                        <div class="form-text">Không bắt buộc. Dùng để gửi thông báo.</div>
+                        <input type="email" class="form-control" id="add-user-email" name="email" placeholder="vidu@email.com">
+                        <div class="form-text">Quan trọng: Dùng để gửi thông báo vị trí đỗ.</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -105,6 +116,4 @@
     </div>
 </div>
 
-<!-- (Tùy chọn) Modal Sửa người dùng (Edit User Modal) -->
-<!-- Bạn sẽ cần tạo cấu trúc tương tự như Add User Modal, với ID khác (vd: #editUserModal) -->
-<!-- và thêm một input hidden để chứa UID cần sửa -->
+<!-- TODO: Thêm Modal Sửa người dùng nếu cần -->

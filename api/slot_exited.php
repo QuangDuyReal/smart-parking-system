@@ -7,7 +7,7 @@ require_once __DIR__ . '/../config.php';
 header('Content-Type: application/json');
 
 // --- Tham số cấu hình (Có thể đưa vào config.php) ---
-define('MIN_OCCUPATION_TIME_SECONDS', 60); // Ít nhất 60 giây mới coi là xe ra thực sự
+define('MIN_OCCUPATION_TIME_SECONDS', 0); // Luôn xử lý tín hiệu exit
 
 $sensor_id = $_POST['sensor_id'] ?? null;
 $slot_name_from_esp = $_POST['slot_name'] ?? null;
